@@ -5,7 +5,7 @@ import filecmp
 
 # Supported photo and metadata extensions
 PHOTO_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.gif', '.bmp', '.tiff', '.heic', '.webp', '.mov', '.mp4', '.avif'}
-METADATA_EXTENSIONS = {'.json', '.xmp', '.xml', '.txt'}
+METADATA_EXTENSIONS = {'.json', '.xmp', '.xml', '.txt', '.aae'}
 
 def get_file_date(path):
     """Get the creation date of the file as a datetime object."""
@@ -30,7 +30,7 @@ def sort_photos(base_path):
             # Skip files already in a year/month folder at the root
             rel_path = os.path.relpath(file_path, base_path)
             parts = rel_path.split(os.sep)
-            if len(parts) >= 3 and parts[0].isdigit() and len(parts[0]) == 4 and parts[1].isdigit() and len(parts[1]) == 2:
+            if len(parts) >= 3 and parts[0].isdigit() and len(parts[0]) == 4 and len(parts[1]) >= 4 and parts[1][:2].isdigit() and parts[1][2] == '_':
                 continue
             files_to_move.append(file_path)
 
@@ -38,7 +38,7 @@ def sort_photos(base_path):
         file = os.path.basename(file_path)
         date = get_file_date(file_path)
         year_folder = os.path.join(base_path, str(date.year))
-        month_folder = os.path.join(year_folder, date.strftime('%B'))
+        month_folder = os.path.join(year_folder, date.strftime('%m_%B'))
         os.makedirs(month_folder, exist_ok=True)
         dest_path = os.path.join(month_folder, file)
         base, ext = os.path.splitext(file)
